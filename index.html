@@ -268,6 +268,16 @@ footer b{color:#5a6675}
 
       <label>Pemasukan Tambahan / Pasif <span class="hint">(opsional)</span></label>
       <div class="field"><span class="pre">Rp</span><input id="incomePasif" class="rp" type="text" inputmode="numeric" placeholder="0"></div>
+
+      <label>Nomor WhatsApp <span class="hint">(agar advisor bisa menghubungi)</span></label>
+      <div class="field"><input id="wa" type="tel" inputmode="numeric" placeholder="0812xxxxxxxx"></div>
+
+      <div class="optline" style="border-bottom:none;align-items:flex-start;margin-top:6px">
+        <div class="lab" style="font-weight:400;font-size:12px;color:#5a6675;padding-right:12px">
+          Saya setuju data ini dikirim ke Milzon Latief (MSIG Advisor) untuk keperluan analisa &amp; konsultasi.
+        </div>
+        <div class="switch on" id="consent" data-on="true"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -427,12 +437,34 @@ document.querySelectorAll('#lifeSeg button').forEach(b=>{
 
 /* options toggles */
 const opts = {darurat:true,jiwa:true,aset:true,invest:true};
-document.querySelectorAll('.switch').forEach(s=>{
+document.querySelectorAll('.switch[data-opt]').forEach(s=>{
   s.addEventListener('click',()=>{
     s.classList.toggle('on');
     opts[s.dataset.opt] = s.classList.contains('on');
   });
 });
+
+/* consent toggle */
+let consent = true;
+const consentEl = document.getElementById('consent');
+consentEl.addEventListener('click',()=>{
+  consentEl.classList.toggle('on');
+  consent = consentEl.classList.contains('on');
+});
+
+/* endpoint Google Sheets */
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzMLXdkVkjudY9kzxfYxYe0uoL04VEje1pt49qp4o_TNpTg8cqAVFtwz-OSCcBF--rlmg/exec";
+let dataSent = false;
+function kirimLead(payload){
+  if(!consent || dataSent) return;
+  dataSent = true;
+  fetch(SHEET_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(payload)
+  }).catch(()=>{ dataSent = false; });
+}
 
 /* ---------- Steps ---------- */
 function goStep(n){
@@ -653,6 +685,22 @@ function hitung(){
   html += `<button class="btn btn-ghost" onclick="goStep(2)" style="margin-top:14px">← Ubah Data</button>`;
 
   document.getElementById('resultArea').innerHTML = html;
+
+  /* --- kirim lead ke Google Sheets --- */
+  kirimLead({
+    nama: nama,
+    wa: document.getElementById('wa').value.trim(),
+    usia: usia,
+    tanggungan: tanggungan,
+    income: income,
+    totalAset: totalAset,
+    netWorth: netWorth,
+    totalEx: totalEx,
+    cashflow: cashflow,
+    lifestyle: lifestyle,
+    aksi: Math.round(totalAksi)
+  });
+
   goStep(3);
 }
 
