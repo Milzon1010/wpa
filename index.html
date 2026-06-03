@@ -705,7 +705,15 @@ function hitung(){
 }
 
 function konsultasi(nama, income, aksi){
-  const txt = `Halo Milzon, saya ${nama}. Saya baru mencoba WPA Financial Analyzer.%0A%0AIncome saya sekitar ${rp(income).replace(/\s/g,'%20')}/bln dan dari hasil analisa saya perlu menyiapkan sekitar ${rp(aksi).replace(/\s/g,'%20')}/bln untuk proteksi & investasi.%0A%0ASaya ingin konsultasi lebih lanjut soal produk MSIG yang sesuai. Terima kasih.`;
+  const txt = [
+    `Selamat siang, Bapak/Ibu Milzon.`,
+    ``,
+    `Perkenalkan, saya ${nama}. Saya baru saja menyelesaikan simulasi melalui WPA Financial Analyzer dan tertarik untuk mendiskusikan hasilnya lebih lanjut.`,
+    ``,
+    `Berdasarkan analisa, dengan pemasukan sekitar ${rp(income)}/bulan, saya disarankan menyiapkan kurang lebih ${rp(aksi)}/bulan untuk proteksi dan perencanaan keuangan.`,
+    ``,
+    `Saya ingin berkonsultasi mengenai solusi MSIG yang paling sesuai dengan kondisi dan tujuan keuangan saya. Mohon informasinya. Terima kasih.`
+  ].join('%0A').replace(/ /g,'%20');
   window.open(`https://wa.me/6281262591127?text=${txt}`,'_blank');
 }
 </script>
